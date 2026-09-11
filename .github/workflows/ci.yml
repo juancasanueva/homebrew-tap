@@ -1,0 +1,119 @@
+name: CI
+
+# Every gate this tap has. A cask that installs is the only proof that a cask
+# installs, so the round trip runs on a real runner rather than being argued for
+# in a review. The tap carries two casks, and both make that round trip: a tap
+# that only proves one of its casks is a tap with an unproven cask in it.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  cask:
+    runs-on: macos-26
+    timeout-minutes: 45
+    steps:
+      - name: Check out the tap
+        uses: actions/checkout@v5
+        with:
+          path: homebrew-tap
+
+      - name: Record the runner image
+        run: |
+          set -euo pipefail
+          sw_vers
+          brew --version
+          uname -m
+          # `depends_on arch: :arm64` makes the install steps unreachable on an
+          # Intel image, and an unreachable gate that reports success is worse
+          # than no gate. So the architecture is asserted, not assumed.
+          test "$(uname -m)" = "arm64"
+
+      - name: Register the checkout as a real tap
+        run: |
+          set -euo pipefail
+          # `brew style` and `brew audit` behave differently against a loose
+          # `.rb` path than against a tapped cask, and the loose path is the
+          # known source of "passes in CI, fails for a user".
+          #
+          # A copy, not `brew tap juancasanueva/tap "$GITHUB_WORKSPACE/..."`:
+          # that form git-clones the checkout, and a clone resolves the source's
+          # HEAD, which `actions/checkout` leaves detached. CI would then audit a
+          # second resolution of the commit instead of the exact bytes under
+          # review.
+          TAPS="$(brew --repository)/Library/Taps/juancasanueva"
+          mkdir -p "$TAPS"
+          cp -R "$GITHUB_WORKSPACE/homebrew-tap" "$TAPS/homebrew-tap"
+          brew tap
+
+      - name: Style
+        # One invocation covers the whole tap, so a style regression in either
+        # cask fails here regardless of which one was edited.
+        run: brew style juancasanueva/tap
+
+      - name: Audit, offline
+        env:
+          HOMEBREW_GITHUB_API_TOKEN: ${{ github.token }}
+        run: |
+          brew audit --cask \
+            juancasanueva/tap/home-cellar \
+            juancasanueva/tap/system-monitor
+
+      - name: Audit, online and strict
+        # The gate that matters: it downloads each url and verifies the declared
+        # sha256 against the bytes GitHub actually serves, which is the one
+        # failure a user would otherwise meet first.
+        #
+        # `--new` is deliberately absent. It enforces homebrew/cask *submission*
+        # house rules that a third-party tap is entitled to ignore, and this tap
+        # is the channel precisely because submission is deferred.
+        env:
+          HOMEBREW_GITHUB_API_TOKEN: ${{ github.token }}
+        run: |
+          brew audit --cask --online --strict \
+            juancasanueva/tap/home-cellar \
+            juancasanueva/tap/system-monitor
+
+      - name: Install Home Cellar
+        run: |
+          set -euo pipefail
+          brew install --cask juancasanueva/tap/home-cellar
+          test -d "/Applications/Home-Cellar.app"
+          /usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" \
+            "/Applications/Home-Cellar.app/Contents/Info.plist"
+
+      - name: Uninstall Home Cellar with a zap
+        run: |
+          set -euo pipefail
+          # The zap paths are only syntactically exercised here — a runner has
+          # never launched the app, so it has nothing to delete. What this
+          # proves is that the stanza is well-formed and that the uninstall
+          # completes, not that the inventory is complete. Completeness is
+          # bound to the source by CaskZapInventoryTests in the app repository.
+          brew uninstall --cask --zap juancasanueva/tap/home-cellar
+          test ! -d "/Applications/Home-Cellar.app"
+
+      - name: Install System Monitor
+        run: |
+          set -euo pipefail
+          brew install --cask juancasanueva/tap/system-monitor
+          test -d "/Applications/System-Monitor.app"
+          /usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" \
+            "/Applications/System-Monitor.app/Contents/Info.plist"
+
+      - name: Uninstall System Monitor with a zap
+        run: |
+          set -euo pipefail
+          # Same reading as the zap above: well-formed and completing, not
+          # complete. The app repository owns the inventory proof.
+          brew uninstall --cask --zap juancasanueva/tap/system-monitor
+          test ! -d "/Applications/System-Monitor.app"

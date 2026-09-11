@@ -1,0 +1,185 @@
+name: Bump
+
+# Keeps every cask in this tap current by pulling, never by being pushed to.
+# The app repositories send nothing, hold no credential for this one, and cannot
+# fail because of this workflow: a missed run costs at most one cron interval,
+# because the next run recomputes the same answer from scratch.
+
+on:
+  schedule:
+    - cron: "17 */6 * * *"      # four times a day
+  workflow_dispatch:            # the maintainer's immediate path
+
+permissions:
+  contents: write
+
+concurrency:
+  group: bump
+  cancel-in-progress: false
+
+jobs:
+  bump:
+    runs-on: macos-26
+    timeout-minutes: 30
+    strategy:
+      # Both entries push to `main`, so they are serialised rather than raced.
+      # `max-parallel: 1` keeps two jobs from computing a bump against the same
+      # parent commit, and `fail-fast: false` keeps one app's broken release
+      # from cancelling the other app's perfectly good one.
+      max-parallel: 1
+      fail-fast: false
+      matrix:
+        include:
+          - cask: home-cellar
+            repo: SWIFTUI_cellar
+            asset: Home-Cellar
+          - cask: system-monitor
+            repo: SWIFTUI_system_monitor
+            asset: System-Monitor
+    steps:
+      - name: Check out the default branch
+        uses: actions/checkout@v5
+        with:
+          ref: main
+          path: homebrew-tap
+
+      - name: Read the latest published release
+        id: release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ matrix.repo }}
+        run: |
+          set -euo pipefail
+          # This reads a public release of a public repository, so no secret
+          # and no cross-repository grant is involved. The run's own token is
+          # sent only to lift the anonymous rate limit that shared runners
+          # exhaust, which returned 403 on the first two runs of this tap.
+          TAG="$(curl -fsSL \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            "https://api.github.com/repos/juancasanueva/${REPO}/releases/latest" \
+            | jq -r '.tag_name // ""')"
+          test -n "$TAG"
+          VERSION="${TAG#v}"
+          # `releases/latest` never points at a prerelease. This is belt and
+          # braces: a hyphenated version must never become a cask version.
+          case "$VERSION" in
+            *-*) echo "::error::refusing to bump to prerelease ${VERSION}"; exit 1 ;;
+          esac
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: Exit if the cask already declares that version
+        id: guard
+        working-directory: homebrew-tap
+        env:
+          VERSION: ${{ steps.release.outputs.version }}
+          CASK: ${{ matrix.cask }}
+        run: |
+          set -euo pipefail
+          # Idempotence is the whole point. Four scheduled runs a day must
+          # produce at most one commit per published release, which is also what
+          # keeps this compatible with "one stable release per commit" in the
+          # app repositories.
+          if grep -qx "  version \"${VERSION}\"" "Casks/${CASK}.rb"; then
+            echo "the cask already declares ${VERSION}; nothing to do"
+            echo "bump=no" >> "$GITHUB_OUTPUT"
+          else
+            echo "bump=yes" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Compute the checksum of the published asset
+        if: steps.guard.outputs.bump == 'yes'
+        id: asset
+        env:
+          VERSION: ${{ steps.release.outputs.version }}
+          REPO: ${{ matrix.repo }}
+          ASSET: ${{ matrix.asset }}
+        run: |
+          set -euo pipefail
+          # Downloaded from the documented URL rather than handed over by the
+          # release job. This proves the URL a stranger will use serves exactly
+          # these bytes; a digest computed on the build runner proves only that
+          # the build was built.
+          URL="https://github.com/juancasanueva/${REPO}/releases/download/v${VERSION}/${ASSET}-${VERSION}.zip"
+          curl -fsSL -o "${RUNNER_TEMP}/asset.zip" "$URL"
+          SHA="$(shasum -a 256 "${RUNNER_TEMP}/asset.zip" | awk '{print $1}')"
+          test "${#SHA}" -eq 64
+          echo "sha256=${SHA}" >> "$GITHUB_OUTPUT"
+
+      - name: Rewrite the two declared lines
+        if: steps.guard.outputs.bump == 'yes'
+        working-directory: homebrew-tap
+        env:
+          VERSION: ${{ steps.release.outputs.version }}
+          SHA: ${{ steps.asset.outputs.sha256 }}
+          CASK_TOKEN: ${{ matrix.cask }}
+        run: |
+          set -euo pipefail
+          CASK="Casks/${CASK_TOKEN}.rb"
+          # Fail closed BEFORE editing: each stanza must occur exactly once, at
+          # the start of its own line. `url` interpolates `#{version}` and
+          # carries no literal version, so there is no second line either
+          # substitution could reach. Each cask file is rewritten on its own —
+          # the sibling cask in this tap is never opened by this step.
+          test "$(grep -c '^  version "' "$CASK")" -eq 1
+          test "$(grep -c '^  sha256 "' "$CASK")" -eq 1
+          /usr/bin/sed -i '' \
+            -e "s|^  version \"[^\"]*\"\$|  version \"${VERSION}\"|" \
+            -e "s|^  sha256 \"[^\"]*\"\$|  sha256 \"${SHA}\"|" \
+            "$CASK"
+          # And fail closed AFTER: the file now declares exactly what was
+          # measured, or this run stops before any gate and before any commit.
+          grep -qx "  version \"${VERSION}\"" "$CASK"
+          grep -qx "  sha256 \"${SHA}\"" "$CASK"
+          git --no-pager diff --stat
+
+      - name: Register the rewritten checkout as a real tap
+        if: steps.guard.outputs.bump == 'yes'
+        run: |
+          set -euo pipefail
+          TAPS="$(brew --repository)/Library/Taps/juancasanueva"
+          mkdir -p "$TAPS"
+          cp -R "$GITHUB_WORKSPACE/homebrew-tap" "$TAPS/homebrew-tap"
+
+      - name: Gate the rewrite before anything is committed
+        if: steps.guard.outputs.bump == 'yes'
+        env:
+          # Homebrew's own GitHub API calls during `brew audit --online` are
+          # anonymous otherwise, and shared runners exhaust that limit.
+          HOMEBREW_GITHUB_API_TOKEN: ${{ github.token }}
+          CASK_TOKEN: ${{ matrix.cask }}
+        run: |
+          set -euo pipefail
+          # A push made with GITHUB_TOKEN does not trigger other workflows, so
+          # ci.yml will never run on the commit this job is about to make.
+          # These are therefore not a second opinion — they are the only gates
+          # a bump commit ever gets, and they run while nothing is committed.
+          #
+          # `brew style` covers the whole tap, so the untouched sibling cask is
+          # linted here too; the audits are scoped to the cask being bumped,
+          # because an unrelated app's release being briefly unreachable must
+          # not block this one.
+          brew style juancasanueva/tap
+          brew audit --cask "juancasanueva/tap/${CASK_TOKEN}"
+          brew audit --cask --online --strict "juancasanueva/tap/${CASK_TOKEN}"
+
+      - name: Commit the bump
+        if: steps.guard.outputs.bump == 'yes'
+        working-directory: homebrew-tap
+        env:
+          VERSION: ${{ steps.release.outputs.version }}
+          CASK_TOKEN: ${{ matrix.cask }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "Casks/${CASK_TOKEN}.rb"
+          git commit -m "chore(cask): ${CASK_TOKEN} ${VERSION}"
+          # Two matrix entries share this branch. `max-parallel: 1` already
+          # orders them, but the checkout happened before the earlier entry
+          # pushed, so this one's parent can be one commit stale. The rebase
+          # replays this bump — which touches only its own cask file — onto
+          # whatever landed meanwhile, instead of failing on a non-fast-forward.
+          git pull --rebase origin main
+          git push origin main

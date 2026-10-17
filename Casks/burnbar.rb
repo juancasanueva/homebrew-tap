@@ -1,6 +1,6 @@
 cask "burnbar" do
-  version "1.0.0"
-  sha256 "d2983ad49b7a76e10af6e450d6fca29e7273f5481b165992a4989d9649447ca9"
+  version "1.0.1"
+  sha256 "2b4ad3b8877d3af4f11167ee9315a766f9c678f0658037c3a00fc6fea48bdf2c"
 
   url "https://github.com/juancasanueva/SWIFTUI_burnbar/releases/download/v#{version}/Burnbar-#{version}.zip"
   name "Burnbar"

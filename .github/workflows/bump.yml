@@ -22,7 +22,7 @@ jobs:
     runs-on: macos-26
     timeout-minutes: 30
     strategy:
-      # Both entries push to `main`, so they are serialised rather than raced.
+      # Every entry pushes to `main`, so they are serialised rather than raced.
       # `max-parallel: 1` keeps two jobs from computing a bump against the same
       # parent commit, and `fail-fast: false` keeps one app's broken release
       # from cancelling the other app's perfectly good one.
@@ -36,6 +36,9 @@ jobs:
           - cask: system-monitor
             repo: SWIFTUI_system_monitor
             asset: System-Monitor
+          - cask: burnbar
+            repo: SWIFTUI_burnbar
+            asset: Burnbar
     steps:
       - name: Check out the default branch
         uses: actions/checkout@v5

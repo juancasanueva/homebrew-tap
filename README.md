@@ -7,8 +7,10 @@ The Homebrew tap for my macOS apps:
 - **[System Monitor](https://github.com/juancasanueva/SWIFTUI_system_monitor)** — a lightweight CPU,
   memory, disk and network monitor for the macOS menu bar. Cask token `system-monitor`, app bundle
   `System-Monitor.app`.
+- **[Burnbar](https://github.com/juancasanueva/SWIFTUI_burnbar)** — a menu bar burn rate for Claude
+  and Codex plan limits. Cask token `burnbar`, app bundle `Burnbar.app`.
 
-One tap, one trust grant, one `brew upgrade` for both.
+One tap, one trust grant, one `brew upgrade` for all of them.
 
 ## Install
 
@@ -24,9 +26,16 @@ brew tap juancasanueva/tap
 brew install --cask system-monitor
 ```
 
+```sh
+brew trust juancasanueva/tap
+brew tap juancasanueva/tap
+brew install --cask burnbar
+```
+
 Each installs the same notarized, stapled build the project's releases page serves —
 [Home Cellar](https://github.com/juancasanueva/SWIFTUI_cellar/releases),
-[System Monitor](https://github.com/juancasanueva/SWIFTUI_system_monitor/releases). The bundle is
+[System Monitor](https://github.com/juancasanueva/SWIFTUI_system_monitor/releases),
+[Burnbar](https://github.com/juancasanueva/SWIFTUI_burnbar/releases). The bundle is
 named identically in both channels.
 
 Homebrew 6 refuses to load, and since 6.0.22 even to tap, a non-official tap that carries a cask
@@ -39,6 +48,7 @@ the tap on the command line is itself the grant, so it needs no `brew trust` at 
 ```sh
 brew install --cask juancasanueva/tap/home-cellar
 brew install --cask juancasanueva/tap/system-monitor
+brew install --cask juancasanueva/tap/burnbar
 ```
 
 ### Already have the app in `/Applications`?
@@ -50,9 +60,10 @@ adopt the existing copy instead:
 ```sh
 brew install --cask --adopt home-cellar
 brew install --cask --adopt system-monitor
+brew install --cask --adopt burnbar
 ```
 
-Adoption keeps the bundle and its data where they are and records it as brew-managed. Because both
+Adoption keeps the bundle and its data where they are and records it as brew-managed. Because all three
 casks declare `auto_updates`, brew does not compare versions before adopting — whatever Sparkle has
 updated the copy to is the copy it takes over.
 
@@ -89,8 +100,8 @@ migration rebinds which tap owns the token, not the bundle on disk.
 
 ## Updates
 
-Both apps update themselves with [Sparkle](https://sparkle-project.org) from an EdDSA-signed
-appcast, so both casks declare `auto_updates true`. Homebrew will not report a self-updated copy as
+All three apps update themselves with [Sparkle](https://sparkle-project.org) from an EdDSA-signed
+appcast, so every cask declares `auto_updates true`. Homebrew will not report a self-updated copy as
 outdated and will not reinstall over it. `brew upgrade` and the apps' own updaters do not fight.
 
 ## Uninstall
@@ -98,6 +109,7 @@ outdated and will not reinstall over it. `brew upgrade` and the apps' own update
 ```sh
 brew uninstall --cask home-cellar
 brew uninstall --cask system-monitor
+brew uninstall --cask burnbar
 ```
 
 To remove an app's caches, local data and preferences as well:
@@ -105,6 +117,7 @@ To remove an app's caches, local data and preferences as well:
 ```sh
 brew uninstall --cask --zap home-cellar
 brew uninstall --cask --zap system-monitor
+brew uninstall --cask --zap burnbar
 ```
 
 **A zap cannot remove Keychain items.** Homebrew's uninstall has no Keychain facility, so these

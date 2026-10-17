@@ -2,7 +2,7 @@ name: CI
 
 # Every gate this tap has. A cask that installs is the only proof that a cask
 # installs, so the round trip runs on a real runner rather than being argued for
-# in a review. The tap carries two casks, and both make that round trip: a tap
+# in a review. The tap carries three casks, and each makes that round trip: a tap
 # that only proves one of its casks is a tap with an unproven cask in it.
 
 on:
@@ -66,7 +66,8 @@ jobs:
         run: |
           brew audit --cask \
             juancasanueva/tap/home-cellar \
-            juancasanueva/tap/system-monitor
+            juancasanueva/tap/system-monitor \
+            juancasanueva/tap/burnbar
 
       - name: Audit, online and strict
         # The gate that matters: it downloads each url and verifies the declared
@@ -81,7 +82,8 @@ jobs:
         run: |
           brew audit --cask --online --strict \
             juancasanueva/tap/home-cellar \
-            juancasanueva/tap/system-monitor
+            juancasanueva/tap/system-monitor \
+            juancasanueva/tap/burnbar
 
       - name: Install Home Cellar
         run: |
@@ -117,3 +119,19 @@ jobs:
           # complete. The app repository owns the inventory proof.
           brew uninstall --cask --zap juancasanueva/tap/system-monitor
           test ! -d "/Applications/System-Monitor.app"
+
+      - name: Install Burnbar
+        run: |
+          set -euo pipefail
+          brew install --cask juancasanueva/tap/burnbar
+          test -d "/Applications/Burnbar.app"
+          /usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" \
+            "/Applications/Burnbar.app/Contents/Info.plist"
+
+      - name: Uninstall Burnbar with a zap
+        run: |
+          set -euo pipefail
+          # Same reading as the zaps above: well-formed and completing, not
+          # complete.
+          brew uninstall --cask --zap juancasanueva/tap/burnbar
+          test ! -d "/Applications/Burnbar.app"

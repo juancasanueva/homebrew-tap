@@ -2,8 +2,8 @@ name: CI
 
 # Every gate this tap has. A cask that installs is the only proof that a cask
 # installs, so the round trip runs on a real runner rather than being argued for
-# in a review. The tap carries three casks, and each makes that round trip: a tap
-# that only proves one of its casks is a tap with an unproven cask in it.
+# in a review. Every released cask in this tap makes that round trip: a tap that
+# only proves one of its casks is a tap with an unproven cask in it.
 
 on:
   pull_request:
@@ -67,7 +67,8 @@ jobs:
           brew audit --cask \
             juancasanueva/tap/home-cellar \
             juancasanueva/tap/system-monitor \
-            juancasanueva/tap/burnbar
+            juancasanueva/tap/burnbar \
+            juancasanueva/tap/matchday
 
       - name: Audit, online and strict
         # The gate that matters: it downloads each url and verifies the declared
@@ -77,6 +78,12 @@ jobs:
         # `--new` is deliberately absent. It enforces homebrew/cask *submission*
         # house rules that a third-party tap is entitled to ignore, and this tap
         # is the channel precisely because submission is deferred.
+        #
+        # Matchday is absent here and from the install round trip below until
+        # its first release exists: its cask still declares the placeholder
+        # 0.0.0 with an all-zero sha256, so there is no asset to download. Add
+        # it to this step and to an install/zap pair once bump.yml has written
+        # the first real version.
         env:
           HOMEBREW_GITHUB_API_TOKEN: ${{ github.token }}
         run: |

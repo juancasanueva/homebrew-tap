@@ -78,19 +78,14 @@ jobs:
         # `--new` is deliberately absent. It enforces homebrew/cask *submission*
         # house rules that a third-party tap is entitled to ignore, and this tap
         # is the channel precisely because submission is deferred.
-        #
-        # Matchday is absent here and from the install round trip below until
-        # its first release exists: its cask still declares the placeholder
-        # 0.0.0 with an all-zero sha256, so there is no asset to download. Add
-        # it to this step and to an install/zap pair once bump.yml has written
-        # the first real version.
         env:
           HOMEBREW_GITHUB_API_TOKEN: ${{ github.token }}
         run: |
           brew audit --cask --online --strict \
             juancasanueva/tap/home-cellar \
             juancasanueva/tap/system-monitor \
-            juancasanueva/tap/burnbar
+            juancasanueva/tap/burnbar \
+            juancasanueva/tap/matchday
 
       - name: Install Home Cellar
         run: |
@@ -142,3 +137,19 @@ jobs:
           # complete.
           brew uninstall --cask --zap juancasanueva/tap/burnbar
           test ! -d "/Applications/Burnbar.app"
+
+      - name: Install Matchday
+        run: |
+          set -euo pipefail
+          brew install --cask juancasanueva/tap/matchday
+          test -d "/Applications/Matchday.app"
+          /usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" \
+            "/Applications/Matchday.app/Contents/Info.plist"
+
+      - name: Uninstall Matchday with a zap
+        run: |
+          set -euo pipefail
+          # Same reading as the zaps above: well-formed and completing, not
+          # complete.
+          brew uninstall --cask --zap juancasanueva/tap/matchday
+          test ! -d "/Applications/Matchday.app"

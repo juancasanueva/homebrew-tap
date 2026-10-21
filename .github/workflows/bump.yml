@@ -39,17 +39,9 @@ jobs:
           - cask: burnbar
             repo: SWIFTUI_burnbar
             asset: Burnbar
-          # Matchday is listed before its first release exists. Its cask ships
-          # the placeholder `version "0.0.0"` with an all-zero sha256, which no
-          # real release can match, so the first published tag is always a
-          # bump. `unreleased: true` lets this one entry treat "no release yet"
-          # (HTTP 404 from releases/latest) as nothing to do instead of a red
-          # run; drop the flag once v1 is out. Every other entry still fails
-          # closed on a missing release.
           - cask: matchday
             repo: SWIFTUI_matchday
             asset: Matchday
-            unreleased: true
     steps:
       - name: Check out the default branch
         uses: actions/checkout@v5
@@ -62,25 +54,18 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ matrix.repo }}
-          UNRELEASED: ${{ matrix.unreleased || false }}
         run: |
           set -euo pipefail
           # This reads a public release of a public repository, so no secret
           # and no cross-repository grant is involved. The run's own token is
           # sent only to lift the anonymous rate limit that shared runners
           # exhaust, which returned 403 on the first two runs of this tap.
-          STATUS="$(curl -sSL -o "${RUNNER_TEMP}/release.json" -w '%{http_code}' \
+          TAG="$(curl -fsSL \
             -H "Accept: application/vnd.github+json" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
             -H "Authorization: Bearer ${GH_TOKEN}" \
-            "https://api.github.com/repos/juancasanueva/${REPO}/releases/latest")"
-          if [ "$STATUS" = "404" ] && [ "$UNRELEASED" = "true" ]; then
-            echo "::notice::${REPO} has no published release yet; nothing to bump"
-            echo "version=" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          test "$STATUS" = "200"
-          TAG="$(jq -r '.tag_name // ""' "${RUNNER_TEMP}/release.json")"
+            "https://api.github.com/repos/juancasanueva/${REPO}/releases/latest" \
+            | jq -r '.tag_name // ""')"
           test -n "$TAG"
           VERSION="${TAG#v}"
           # `releases/latest` never points at a prerelease. This is belt and
@@ -102,10 +87,7 @@ jobs:
           # produce at most one commit per published release, which is also what
           # keeps this compatible with "one stable release per commit" in the
           # app repositories.
-          if [ -z "$VERSION" ]; then
-            echo "no published release; nothing to do"
-            echo "bump=no" >> "$GITHUB_OUTPUT"
-          elif grep -qx "  version \"${VERSION}\"" "Casks/${CASK}.rb"; then
+          if grep -qx "  version \"${VERSION}\"" "Casks/${CASK}.rb"; then
             echo "the cask already declares ${VERSION}; nothing to do"
             echo "bump=no" >> "$GITHUB_OUTPUT"
           else

@@ -68,7 +68,8 @@ jobs:
             juancasanueva/tap/home-cellar \
             juancasanueva/tap/system-monitor \
             juancasanueva/tap/burnbar \
-            juancasanueva/tap/matchday
+            juancasanueva/tap/matchday \
+            juancasanueva/tap/peribattery
 
       - name: Audit, online and strict
         # The gate that matters: it downloads each url and verifies the declared
@@ -78,6 +79,12 @@ jobs:
         # `--new` is deliberately absent. It enforces homebrew/cask *submission*
         # house rules that a third-party tap is entitled to ignore, and this tap
         # is the channel precisely because submission is deferred.
+        #
+        # PeriBattery is absent here and from the install round trip below
+        # until its first release exists: its cask still declares the
+        # placeholder 0.0.0 with an all-zero sha256, so there is no asset to
+        # download. Add it to this step and to an install/zap pair once bump.yml
+        # has written the first real version.
         env:
           HOMEBREW_GITHUB_API_TOKEN: ${{ github.token }}
         run: |

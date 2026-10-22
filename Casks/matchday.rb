@@ -1,6 +1,6 @@
 cask "matchday" do
-  version "1.0.5"
-  sha256 "43730f53f237f4cebfe51c4a9072accd7cff2ec522dd09321750dceb0ca7d9c7"
+  version "1.0.7"
+  sha256 "49965284b59eefae30051a6fa222521d45b41fe7ccb92fabd8206a1a4a4e8d64"
 
   url "https://github.com/juancasanueva/SWIFTUI_matchday/releases/download/v#{version}/Matchday-#{version}.zip"
   name "Matchday"

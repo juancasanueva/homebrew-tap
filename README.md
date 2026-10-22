@@ -11,10 +11,8 @@ The Homebrew tap for my macOS apps:
   and Codex plan limits. Cask token `burnbar`, app bundle `Burnbar.app`.
 - **[Matchday](https://github.com/juancasanueva/SWIFTUI_matchday)** — a menu bar app to follow soccer
   teams: live scores, fixtures and standings. Cask token `matchday`, app bundle `Matchday.app`.
-  Installable once its first release is published.
 - **[PeriBattery](https://github.com/juancasanueva/SWIFTUI_battery)** — menu bar battery levels for
   Logitech keyboards and mice. Cask token `peribattery`, app bundle `PeriBattery.app`.
-  Installable once its first release is published.
 
 One tap, one trust grant, one `brew upgrade` for all of them.
 

@@ -1,6 +1,6 @@
 cask "peribattery" do
-  version "1.0.3"
-  sha256 "84aa54adbd994f1f709a447f01495a310398618e365b74e817ad50030bc5bb81"
+  version "1.0.5"
+  sha256 "3a60cf9cbc04b780d6ea85475a0391c383b4dbf77d09199d7b9c0cd1e5e7c758"
 
   url "https://github.com/juancasanueva/SWIFTUI_battery/releases/download/v#{version}/PeriBattery-#{version}.zip"
   name "PeriBattery"

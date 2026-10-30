@@ -164,9 +164,10 @@ jobs:
         run: |
           set -euo pipefail
           # A push made with GITHUB_TOKEN does not trigger other workflows, so
-          # ci.yml will never run on the commit this job is about to make.
-          # These are therefore not a second opinion — they are the only gates
-          # a bump commit ever gets, and they run while nothing is committed.
+          # the commit this job is about to make gets no `push` run of ci.yml.
+          # The dispatch-ci job below runs ci.yml afterwards, but only once the
+          # commit is on main. These are therefore the only gates that run while
+          # nothing is committed.
           #
           # `brew style` covers the whole tap, so the untouched sibling cask is
           # linted here too; the audits are scoped to the cask being bumped,
@@ -195,3 +196,33 @@ jobs:
           # whatever landed meanwhile, instead of failing on a non-fast-forward.
           git pull --rebase origin main
           git push origin main
+
+  dispatch-ci:
+    # One CI run for the whole matrix, because ci.yml covers every cask. It also
+    # runs when a matrix entry failed: another entry's bump may still have landed,
+    # and that commit needs its install round trip all the same.
+    needs: bump
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: write
+      contents: read
+    steps:
+      - name: Run CI if main moved during this run
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          START_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          # Matrix jobs cannot report per-entry outputs reliably, so main itself
+          # is the evidence. A human push landing mid-run also counts, which at
+          # worst starts one redundant CI run: ci.yml's concurrency group cancels
+          # the older one.
+          HEAD_SHA="$(gh api "repos/${REPO}/commits/main" --jq .sha)"
+          if [ "$HEAD_SHA" = "$START_SHA" ]; then
+            echo "main did not move; nothing to run"
+            exit 0
+          fi
+          gh workflow run ci.yml --repo "$REPO" --ref main

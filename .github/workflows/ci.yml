@@ -9,6 +9,9 @@ on:
   pull_request:
   push:
     branches: [main]
+  # How a bump reaches this workflow: its GITHUB_TOKEN push cannot trigger the
+  # `push` event above, but a dispatch made with that token can run this.
+  workflow_dispatch:
 
 permissions:
   contents: read

@@ -69,7 +69,8 @@ jobs:
             juancasanueva/tap/system-monitor \
             juancasanueva/tap/burnbar \
             juancasanueva/tap/matchday \
-            juancasanueva/tap/peribattery
+            juancasanueva/tap/peribattery \
+            juancasanueva/tap/attic
 
       - name: Audit, online and strict
         # The gate that matters: it downloads each url and verifies the declared
@@ -87,7 +88,8 @@ jobs:
             juancasanueva/tap/system-monitor \
             juancasanueva/tap/burnbar \
             juancasanueva/tap/matchday \
-            juancasanueva/tap/peribattery
+            juancasanueva/tap/peribattery \
+            juancasanueva/tap/attic
 
       - name: Install Home Cellar
         run: |
@@ -171,3 +173,19 @@ jobs:
           # complete.
           brew uninstall --cask --zap juancasanueva/tap/peribattery
           test ! -d "/Applications/PeriBattery.app"
+
+      - name: Install Attic
+        run: |
+          set -euo pipefail
+          brew install --cask juancasanueva/tap/attic
+          test -d "/Applications/Attic.app"
+          /usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" \
+            "/Applications/Attic.app/Contents/Info.plist"
+
+      - name: Uninstall Attic with a zap
+        run: |
+          set -euo pipefail
+          # Same reading as the zaps above: well-formed and completing, not
+          # complete.
+          brew uninstall --cask --zap juancasanueva/tap/attic
+          test ! -d "/Applications/Attic.app"

@@ -13,6 +13,8 @@ The Homebrew tap for my macOS apps:
   teams: live scores, fixtures and standings. Cask token `matchday`, app bundle `Matchday.app`.
 - **[PeriBattery](https://github.com/juancasanueva/SWIFTUI_battery)** — menu bar battery levels for
   Logitech keyboards and mice. Cask token `peribattery`, app bundle `PeriBattery.app`.
+- **[Attic](https://github.com/juancasanueva/SWIFTUI_Attic)** — disk space analyzer with sunburst and
+  treemap views. Cask token `attic`, app bundle `Attic.app`.
 
 One tap, one trust grant, one `brew upgrade` for all of them.
 

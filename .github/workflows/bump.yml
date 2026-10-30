@@ -45,6 +45,9 @@ jobs:
           - cask: peribattery
             repo: SWIFTUI_battery
             asset: PeriBattery
+          - cask: attic
+            repo: SWIFTUI_Attic
+            asset: Attic
     steps:
       - name: Check out the default branch
         uses: actions/checkout@v5

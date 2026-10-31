@@ -150,6 +150,11 @@ jobs:
         if: steps.guard.outputs.bump == 'yes'
         run: |
           set -euo pipefail
+          # Homebrew 7.0.11 refuses to load a cask from a tap nobody trusted, and
+          # the runner images are rolling onto it. `brew trust` accepts a name
+          # that is not tapped yet, and trust must come first: this run is
+          # auditing the tap's own bytes, so it has no one else to ask.
+          brew trust juancasanueva/tap
           TAPS="$(brew --repository)/Library/Taps/juancasanueva"
           mkdir -p "$TAPS"
           cp -R "$GITHUB_WORKSPACE/homebrew-tap" "$TAPS/homebrew-tap"

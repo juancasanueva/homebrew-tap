@@ -48,6 +48,9 @@ jobs:
           - cask: attic
             repo: SWIFTUI_Attic
             asset: Attic
+          - cask: terrazzo
+            repo: SWIFTUI_Terrazzo
+            asset: Terrazzo
     steps:
       - name: Check out the default branch
         uses: actions/checkout@v5

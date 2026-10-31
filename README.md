@@ -15,6 +15,8 @@ The Homebrew tap for my macOS apps:
   Logitech keyboards and mice. Cask token `peribattery`, app bundle `PeriBattery.app`.
 - **[Attic](https://github.com/juancasanueva/SWIFTUI_Attic)** — disk space analyzer with sunburst and
   treemap views. Cask token `attic`, app bundle `Attic.app`.
+- **[Terrazzo](https://github.com/juancasanueva/SWIFTUI_Terrazzo)** — tiling window manager with numbered
+  workspaces. Cask token `terrazzo`, app bundle `Terrazzo.app`.
 
 One tap, one trust grant, one `brew upgrade` for all of them.
 

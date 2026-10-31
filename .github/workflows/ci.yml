@@ -78,7 +78,8 @@ jobs:
             juancasanueva/tap/burnbar \
             juancasanueva/tap/matchday \
             juancasanueva/tap/peribattery \
-            juancasanueva/tap/attic
+            juancasanueva/tap/attic \
+            juancasanueva/tap/terrazzo
 
       - name: Audit, online and strict
         # The gate that matters: it downloads each url and verifies the declared
@@ -97,7 +98,8 @@ jobs:
             juancasanueva/tap/burnbar \
             juancasanueva/tap/matchday \
             juancasanueva/tap/peribattery \
-            juancasanueva/tap/attic
+            juancasanueva/tap/attic \
+            juancasanueva/tap/terrazzo
 
       - name: Install Home Cellar
         run: |
@@ -197,3 +199,19 @@ jobs:
           # complete.
           brew uninstall --cask --zap juancasanueva/tap/attic
           test ! -d "/Applications/Attic.app"
+
+      - name: Install Terrazzo
+        run: |
+          set -euo pipefail
+          brew install --cask juancasanueva/tap/terrazzo
+          test -d "/Applications/Terrazzo.app"
+          /usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" \
+            "/Applications/Terrazzo.app/Contents/Info.plist"
+
+      - name: Uninstall Terrazzo with a zap
+        run: |
+          set -euo pipefail
+          # Same reading as the zaps above: well-formed and completing, not
+          # complete.
+          brew uninstall --cask --zap juancasanueva/tap/terrazzo
+          test ! -d "/Applications/Terrazzo.app"

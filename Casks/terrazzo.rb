@@ -1,6 +1,6 @@
 cask "terrazzo" do
-  version "1.0.0"
-  sha256 "d0b4d5250bfa21b9a9dba3a204bc7b76705f3babd44559f519f00b83938f4d82"
+  version "1.0.2"
+  sha256 "045a417f79b513ee3349f439d820ad4695b5e0200d928b1c5f63d73a8eae1e27"
 
   url "https://github.com/juancasanueva/SWIFTUI_Terrazzo/releases/download/v#{version}/Terrazzo-#{version}.zip"
   name "Terrazzo"

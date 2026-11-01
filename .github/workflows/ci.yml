@@ -80,7 +80,7 @@ jobs:
             juancasanueva/tap/peribattery \
             juancasanueva/tap/attic \
             juancasanueva/tap/terrazzo \
-            juancasanueva/tap/youtubedownloader
+            juancasanueva/tap/yt_downloader
 
       - name: Audit, online and strict
         # The gate that matters: it downloads each url and verifies the declared
@@ -101,7 +101,7 @@ jobs:
             juancasanueva/tap/peribattery \
             juancasanueva/tap/attic \
             juancasanueva/tap/terrazzo \
-            juancasanueva/tap/youtubedownloader
+            juancasanueva/tap/yt_downloader
 
       - name: Install Home Cellar
         run: |
@@ -221,7 +221,7 @@ jobs:
       - name: Install YouTubeDownloader
         run: |
           set -euo pipefail
-          brew install --cask juancasanueva/tap/youtubedownloader
+          brew install --cask juancasanueva/tap/yt_downloader
           test -d "/Applications/YouTubeDownloader.app"
           /usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" \
             "/Applications/YouTubeDownloader.app/Contents/Info.plist"
@@ -234,5 +234,5 @@ jobs:
           set -euo pipefail
           # Same reading as the zaps above: well-formed and completing, not
           # complete.
-          brew uninstall --cask --zap juancasanueva/tap/youtubedownloader
+          brew uninstall --cask --zap juancasanueva/tap/yt_downloader
           test ! -d "/Applications/YouTubeDownloader.app"

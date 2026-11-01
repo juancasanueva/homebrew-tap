@@ -51,6 +51,9 @@ jobs:
           - cask: terrazzo
             repo: SWIFTUI_Terrazzo
             asset: Terrazzo
+          - cask: youtube-downloader
+            repo: SWIFTUI_youtube_downloader
+            asset: YouTubeDownloader
     steps:
       - name: Check out the default branch
         uses: actions/checkout@v5

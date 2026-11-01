@@ -79,7 +79,8 @@ jobs:
             juancasanueva/tap/matchday \
             juancasanueva/tap/peribattery \
             juancasanueva/tap/attic \
-            juancasanueva/tap/terrazzo
+            juancasanueva/tap/terrazzo \
+            juancasanueva/tap/youtube-downloader
 
       - name: Audit, online and strict
         # The gate that matters: it downloads each url and verifies the declared
@@ -99,7 +100,8 @@ jobs:
             juancasanueva/tap/matchday \
             juancasanueva/tap/peribattery \
             juancasanueva/tap/attic \
-            juancasanueva/tap/terrazzo
+            juancasanueva/tap/terrazzo \
+            juancasanueva/tap/youtube-downloader
 
       - name: Install Home Cellar
         run: |
@@ -215,3 +217,22 @@ jobs:
           # complete.
           brew uninstall --cask --zap juancasanueva/tap/terrazzo
           test ! -d "/Applications/Terrazzo.app"
+
+      - name: Install YouTubeDownloader
+        run: |
+          set -euo pipefail
+          brew install --cask juancasanueva/tap/youtube-downloader
+          test -d "/Applications/YouTubeDownloader.app"
+          /usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" \
+            "/Applications/YouTubeDownloader.app/Contents/Info.plist"
+          # The app can't download anything without these two.
+          command -v yt-dlp
+          command -v ffmpeg
+
+      - name: Uninstall YouTubeDownloader with a zap
+        run: |
+          set -euo pipefail
+          # Same reading as the zaps above: well-formed and completing, not
+          # complete.
+          brew uninstall --cask --zap juancasanueva/tap/youtube-downloader
+          test ! -d "/Applications/YouTubeDownloader.app"

@@ -51,7 +51,7 @@ jobs:
           - cask: terrazzo
             repo: SWIFTUI_Terrazzo
             asset: Terrazzo
-          - cask: youtube-downloader
+          - cask: youtubedownloader
             repo: SWIFTUI_youtube_downloader
             asset: YouTubeDownloader
     steps:

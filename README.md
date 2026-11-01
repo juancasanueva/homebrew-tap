@@ -18,7 +18,7 @@ The Homebrew tap for my macOS apps:
 - **[Terrazzo](https://github.com/juancasanueva/SWIFTUI_Terrazzo)** — tiling window manager with numbered
   workspaces. Cask token `terrazzo`, app bundle `Terrazzo.app`.
 - **[YouTubeDownloader](https://github.com/juancasanueva/SWIFTUI_youtube_downloader)** — a menu bar app that
-  downloads YouTube videos with yt-dlp. Cask token `youtube-downloader`, app bundle `YouTubeDownloader.app`.
+  downloads YouTube videos with yt-dlp. Cask token `youtubedownloader`, app bundle `YouTubeDownloader.app`.
 
 One tap, one trust grant, one `brew upgrade` for all of them.
 

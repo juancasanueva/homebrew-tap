@@ -1,4 +1,4 @@
-cask "youtube-downloader" do
+cask "youtubedownloader" do
   version "1.0.1"
   sha256 "5bf7074cb37c0a9c405baf20b8235928d1182916fb9d2dddad1918119850d031"
 

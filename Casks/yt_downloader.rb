@@ -1,6 +1,6 @@
 cask "yt_downloader" do
-  version "1.0.1"
-  sha256 "5bf7074cb37c0a9c405baf20b8235928d1182916fb9d2dddad1918119850d031"
+  version "1.0.5"
+  sha256 "f77463c8f32b6ec2f2395cd517a6e6cc1c7f7a7829dbab709d589dce8e16f0a9"
 
   url "https://github.com/juancasanueva/SWIFTUI_youtube_downloader/releases/download/v#{version}/YouTubeDownloader-#{version}.zip"
   name "YouTubeDownloader"

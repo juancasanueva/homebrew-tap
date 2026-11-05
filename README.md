@@ -17,6 +17,8 @@ The Homebrew tap for my macOS apps:
   treemap views. Cask token `attic`, app bundle `Attic.app`.
 - **[Terrazzo](https://github.com/juancasanueva/SWIFTUI_Terrazzo)** — tiling window manager with numbered
   workspaces. Cask token `terrazzo`, app bundle `Terrazzo.app`.
+- **[FileFinder](https://github.com/juancasanueva/SWIFTUI_FileFinder)** — a keyboard-friendly dual-pane
+  file browser. Cask token `filefinder`, app bundle `FileFinder.app`.
 - **[YouTubeDownloader](https://github.com/juancasanueva/SWIFTUI_youtube_downloader)** — a menu bar app that
   downloads YouTube videos with yt-dlp. Cask token `yt_downloader`, app bundle `YouTubeDownloader.app`.
 

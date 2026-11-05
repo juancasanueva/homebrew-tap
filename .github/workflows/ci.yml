@@ -79,6 +79,7 @@ jobs:
             juancasanueva/tap/matchday \
             juancasanueva/tap/peribattery \
             juancasanueva/tap/attic \
+            juancasanueva/tap/filefinder \
             juancasanueva/tap/terrazzo \
             juancasanueva/tap/yt_downloader
 
@@ -100,8 +101,25 @@ jobs:
             juancasanueva/tap/matchday \
             juancasanueva/tap/peribattery \
             juancasanueva/tap/attic \
+            juancasanueva/tap/filefinder \
             juancasanueva/tap/terrazzo \
             juancasanueva/tap/yt_downloader
+
+      - name: Install FileFinder
+        run: |
+          set -euo pipefail
+          brew install --cask juancasanueva/tap/filefinder
+          test -d "/Applications/FileFinder.app"
+          /usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" \
+            "/Applications/FileFinder.app/Contents/Info.plist"
+
+      - name: Uninstall FileFinder with a zap
+        run: |
+          set -euo pipefail
+          # Same reading as the zaps below: well-formed and completing, not
+          # complete.
+          brew uninstall --cask --zap juancasanueva/tap/filefinder
+          test ! -d "/Applications/FileFinder.app"
 
       - name: Install Home Cellar
         run: |

@@ -1,6 +1,6 @@
 cask "attic" do
-  version "1.0.2"
-  sha256 "abebde674d5e862c07ba0445060613b5e6dfdeb794919965ecb4f40537f8dd62"
+  version "1.0.4"
+  sha256 "1755481f3d0361688e4cbe156d5c047dc04d4618844e319f423d0ab8a5b020d4"
 
   url "https://github.com/juancasanueva/SWIFTUI_Attic/releases/download/v#{version}/Attic-#{version}.zip"
   name "Attic"

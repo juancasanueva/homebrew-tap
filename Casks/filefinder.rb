@@ -1,6 +1,6 @@
 cask "filefinder" do
-  version "1.1.3"
-  sha256 "024a7031d247f6627046728aff6baf4bec8961afb6d83b293d731d957fb2911e"
+  version "1.1.4"
+  sha256 "5878d1413c3d6be7195d1bcfc92389c5c0faf1fd3025b201d41c14be77ced3c8"
 
   url "https://github.com/juancasanueva/SWIFTUI_FileFinder/releases/download/v#{version}/FileFinder-#{version}.zip"
   name "FileFinder"

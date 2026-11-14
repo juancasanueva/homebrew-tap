@@ -21,6 +21,8 @@ The Homebrew tap for my macOS apps:
   file browser. Cask token `filefinder`, app bundle `FileFinder.app`.
 - **[YouTubeDownloader](https://github.com/juancasanueva/SWIFTUI_youtube_downloader)** — a menu bar app that
   downloads YouTube videos with yt-dlp. Cask token `yt_downloader`, app bundle `YouTubeDownloader.app`.
+- **[filefinder-tui](https://github.com/juancasanueva/filefinder-tui)** — a keyboard-first terminal file
+  manager with previews, tabs and two panes. Formula `filefinder-tui`, command `filefinder-tui`.
 
 One tap, one trust grant, one `brew upgrade` for all of them.
 
@@ -54,6 +56,13 @@ brew install --cask matchday
 brew trust juancasanueva/tap
 brew tap juancasanueva/tap
 brew install --cask peribattery
+```
+
+The terminal file manager is a formula, not a cask; it installs a universal binary from its
+[releases](https://github.com/juancasanueva/filefinder-tui/releases), with `bat` for coloured code:
+
+```sh
+brew install juancasanueva/tap/filefinder-tui
 ```
 
 Each installs the same notarized, stapled build the project's releases page serves —

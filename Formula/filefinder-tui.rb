@@ -1,8 +1,8 @@
 class FilefinderTui < Formula
   desc "Keyboard-first terminal file manager with previews, tabs and two panes"
   homepage "https://github.com/juancasanueva/filefinder-tui"
-  url "https://github.com/juancasanueva/filefinder-tui/releases/download/v1.0.3/filefinder-tui-1.0.3-macos-universal.tar.gz"
-  sha256 "e04b58ec59ec764bd45aab16f3ab21a9804392d17c9fb1a949b979be2d483631"
+  url "https://github.com/juancasanueva/filefinder-tui/releases/download/v1.0.4/filefinder-tui-1.0.4-macos-universal.tar.gz"
+  sha256 "f0318bc3711c7a636e54e52ec53a5f1fc5fd8ea02466c81b5c8d3eb1a463b9e9"
   license "MIT"
 
   livecheck do

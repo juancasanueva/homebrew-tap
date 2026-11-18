@@ -1,6 +1,6 @@
 cask "dayloom" do
-  version "1.0.1"
-  sha256 "f8b74e94bfe0de98d1ce90127143b932b0e715d5c60d827b5a88732f183487ce"
+  version "1.0.2"
+  sha256 "ee8a5e3db0d903039ebb8f3c1d0e0fca8dd7855e0071c945d401f5a1bcda73ee"
 
   url "https://github.com/juancasanueva/dayloom/releases/download/v#{version}/Dayloom-#{version}.zip"
   name "Dayloom"
@@ -17,6 +17,7 @@ cask "dayloom" do
   app "Dayloom.app"
 
   zap trash: [
+    "~/.config/dayloom",
     "~/Library/Application Scripts/com.juancasanueva.agenda",
     "~/Library/Containers/com.juancasanueva.agenda",
   ]

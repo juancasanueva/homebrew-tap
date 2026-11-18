@@ -19,6 +19,8 @@ The Homebrew tap for my macOS apps:
   workspaces. Cask token `terrazzo`, app bundle `Terrazzo.app`.
 - **[FileFinder](https://github.com/juancasanueva/SWIFTUI_FileFinder)** — a keyboard-friendly dual-pane
   file browser. Cask token `filefinder`, app bundle `FileFinder.app`.
+- **[Dayloom](https://github.com/juancasanueva/dayloom)** — a planner that keeps tasks, calendar, habits
+  and notes in one window, synced through iCloud. Cask token `dayloom`, app bundle `Dayloom.app`.
 - **[YouTubeDownloader](https://github.com/juancasanueva/SWIFTUI_youtube_downloader)** — a menu bar app that
   downloads YouTube videos with yt-dlp. Cask token `yt_downloader`, app bundle `YouTubeDownloader.app`.
 - **[filefinder-tui](https://github.com/juancasanueva/filefinder-tui)** — a keyboard-first terminal file

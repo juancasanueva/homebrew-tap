@@ -54,6 +54,9 @@ jobs:
           - cask: filefinder
             repo: SWIFTUI_FileFinder
             asset: FileFinder
+          - cask: dayloom
+            repo: dayloom
+            asset: Dayloom
           - cask: yt_downloader
             repo: SWIFTUI_youtube_downloader
             asset: YouTubeDownloader

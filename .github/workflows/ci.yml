@@ -80,6 +80,7 @@ jobs:
             juancasanueva/tap/peribattery \
             juancasanueva/tap/attic \
             juancasanueva/tap/filefinder \
+            juancasanueva/tap/dayloom \
             juancasanueva/tap/terrazzo \
             juancasanueva/tap/yt_downloader
 
@@ -102,8 +103,23 @@ jobs:
             juancasanueva/tap/peribattery \
             juancasanueva/tap/attic \
             juancasanueva/tap/filefinder \
+            juancasanueva/tap/dayloom \
             juancasanueva/tap/terrazzo \
             juancasanueva/tap/yt_downloader
+
+      - name: Install Dayloom
+        run: |
+          set -euo pipefail
+          brew install --cask juancasanueva/tap/dayloom
+          test -d "/Applications/Dayloom.app"
+          /usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" \
+            "/Applications/Dayloom.app/Contents/Info.plist"
+
+      - name: Uninstall Dayloom with a zap
+        run: |
+          set -euo pipefail
+          brew uninstall --cask --zap juancasanueva/tap/dayloom
+          test ! -d "/Applications/Dayloom.app"
 
       - name: Install FileFinder
         run: |

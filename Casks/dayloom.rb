@@ -1,6 +1,6 @@
 cask "dayloom" do
-  version "1.0.4"
-  sha256 "8099f86b3c63784d846785cee437c41fe5c77e6043f67b8996fd223321dba3cc"
+  version "1.0.5"
+  sha256 "91fd114691a52c75b98ac3f823e7cc6fef040eb6904bfa43349d628b6511526a"
 
   url "https://github.com/juancasanueva/dayloom/releases/download/v#{version}/Dayloom-#{version}.zip"
   name "Dayloom"

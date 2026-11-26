@@ -1,6 +1,6 @@
 cask "system-monitor" do
-  version "1.0.3"
-  sha256 "42b40ee898a34842b912434aab4546e88e4f0ff738269bf0a905bdb2ccdf2f0a"
+  version "1.0.4"
+  sha256 "c379db757b8e5659024f985434a5af1e708588e786b0a90f6f36a8f58b9e430b"
 
   url "https://github.com/juancasanueva/SWIFTUI_system_monitor/releases/download/v#{version}/System-Monitor-#{version}.zip"
   name "System-Monitor"
